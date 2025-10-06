@@ -42,7 +42,7 @@ add_user() {
                 echo "Group $groupname already exists. Skipping creation of $groupname group..."
             fi
             # Add group to user
-            usermod -aG "$groupname" "$username" || { echo "Failed to apply group $groupname to $username"; return 1; }
+            usermod -g "$groupname" "$username" || { echo "Failed to apply group $groupname to $username"; return 1; }
         fi
     else
         # Check if the uid right,if not, change it
