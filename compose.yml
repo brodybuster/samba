@@ -1,6 +1,6 @@
 services:
   samba:
-    image: vincetrain/samba
+    image: ghcr.io/brodybuster/samba:latest
     container_name: samba
     ports:
       - 445:445

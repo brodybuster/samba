@@ -1,5 +1,5 @@
 <div align="center">
-<a href="https://github.com/vincetrain/samba"><img src="https://raw.githubusercontent.com/dockur/samba/master/.github/logo.png" title="Logo" style="max-width:100%;" width="256" /></a>
+<a href="https://github.com/brodybuster/samba"><img src="https://raw.githubusercontent.com/dockur/samba/master/.github/logo.png" title="Logo" style="max-width:100%;" width="256" /></a>
 </div>
 <div align="center">
 
@@ -18,7 +18,7 @@ Via Docker Compose:
 ```yaml
 services:
   samba:
-    image: dockurr/samba
+    image: ghcr.io/brodybuster/samba:latest
     container_name: samba
     ports:
       - 445:445
@@ -29,7 +29,7 @@ services:
 Via Docker CLI:
 
 ```bash
-docker run -it -d -p 445:445 -v "/home/example/data:/storage" vincetrain/samba
+docker run -it -d -p 445:445 -v "/home/example/data:/storage" ghcr.io/brodybuster/samba:latest
 ```
 
 Default credentials are samba:secret, but changing these credentials is recommended.
@@ -46,7 +46,7 @@ By default this container is configured to host a share for user "samba" with pa
 
 ### How do I modify the default credentials or add more users?
 
-You can change the default credentials or add more users inside the provided [users](https://github.com/vincetrain/samba/blob/master/secret/users) file, and binding the file to `/run/secrets/users`, or using the file as a Docker secret if working with Docker swarms.
+You can change the default credentials or add more users inside the provided [users](https://github.com/brodybuster/samba/blob/master/secrets/users) file, and bind that file to `/run/secrets/users`, or use it as a Docker secret if working with Docker Swarm.
 
 Passwords are stored as NTLM MD4 hashes. To generate a NTLM MD4 hash, consider using the following command:
 
@@ -56,23 +56,48 @@ replacing "password" with the desired user's password.
 
 ### How can I implement a group share?
 
-You can implement group shares by modifying the provided [groupshares](https://github.com/vincetrain/samba/blob/master/secret/groupshares) file, and binding the file to `/run/secrets/groupshares`, or using the file as a Docker secret if working with Docker swarms.
+You can implement group shares by modifying the provided [groupshares](https://github.com/brodybuster/samba/blob/master/secrets/groupshares) file, and bind that file to `/run/secrets/groupshares`, or use it as a Docker secret if working with Docker Swarm.
 
 ### How do I modify other settings?
 
-If you need more advanced features, you can completely override the default configuration by modifying the [smb.conf](https://github.com/vincetrain/samba/blob/master/smb.conf) file in this repo, and binding your custom config to the container like this:
+If you need more advanced features, you can completely override the default configuration by modifying the [smb.conf](https://github.com/brodybuster/samba/blob/master/smb.conf) file in this repo, and bind your custom config to the container like this:
 
 ```yaml
 volumes:
   - /example/smb.conf:/etc/samba/smb.conf
 ```
+## Publishing  🚀
+
+This repo now publishes the image with GitHub Actions from [`.github/workflows/docker-publish.yml`](/Users/plincoln/github/samba/.github/workflows/docker-publish.yml).
+
+What gets published:
+
+- Push to `master`: updates `ghcr.io/brodybuster/samba:latest` and `ghcr.io/brodybuster/samba:sha-<commit>`
+- Push a tag like `v1.2.3`: additionally publishes `:v1.2.3` and `:1.2.3`
+
+Required GitHub repository settings:
+
+- `Settings -> Actions -> General -> Workflow permissions`: set to `Read and write permissions`
+
+Release flow:
+
+```bash
+git push origin master
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The workflow builds and pushes a multi-arch image for `linux/amd64` and `linux/arm64`.
+
 ## Building  🔨
-Build with buildkit!
 
-Run:
-`DOCKER_BUILDKIT=1 docker build . -t [registry:tag]` inside of this repository's directory.
+Build with BuildKit:
 
-Or have the following configuration in your `daemon.json`
+```bash
+DOCKER_BUILDKIT=1 docker build . -t ghcr.io/brodybuster/samba:dev
+```
+
+Or have the following configuration in your `daemon.json`:
 ```json
 {
     "features": {
@@ -80,6 +105,7 @@ Or have the following configuration in your `daemon.json`
     }
 }
 ```
-And build normally.
 
-For more information, refer to the [offical dockerdocs](https://docs.docker.com/build/buildkit/#getting-started)
+Then build normally with `docker build . -t ghcr.io/brodybuster/samba:dev`.
+
+For more information, refer to the [official Docker docs](https://docs.docker.com/build/buildkit/#getting-started).

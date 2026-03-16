@@ -5,6 +5,7 @@ RUN set -eu && \
     tini \
     bash \
     samba \
+    samba-client \
     tzdata \
     shadow && \
     rm -f /etc/samba/smb.conf && \
@@ -20,4 +21,4 @@ EXPOSE 445
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/samba.sh"]
 
-HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L localhost --configfile=/etc/samba.conf -U $(cut -d":" -O"%" -f1-2 /run/secrets/agent) -m SMB3 -c 'exit'
+HEALTHCHECK --interval=60s --timeout=15s CMD sh -ec 'agent="$(cut -d: -f1,2 /run/secrets/agent | tr ":" "%")"; smbclient -L localhost --configfile=/etc/samba.conf -U "$agent" -m SMB3 -c "exit"'
