@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:3.21
 
 RUN set -eu && \
     apk --no-cache add \
