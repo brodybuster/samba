@@ -16,7 +16,6 @@ COPY --chmod=600 smb.conf /etc/samba/smb.conf
 COPY --chmod=600 secrets/users /run/secrets/users
 COPY --chmod=600 secrets/agent /run/secrets/agent
 
-VOLUME /storage
 EXPOSE 445
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/samba.sh"]
